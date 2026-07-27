@@ -69,6 +69,13 @@ Không có hành động ghi nào chạy thẳng. Luôn: agent trình bản xem 
 **Nguyên tắc 4 — Mỗi bước phải chạy được.**
 Không có bước nào "viết code 3 ngày rồi mới thấy kết quả". Mỗi bước kết thúc bằng một lệnh chạy và một kết quả nhìn thấy được.
 
+**Nguyên tắc 5 — Tài liệu và prompt không chứa code.**
+Spec, kế hoạch thi công, và prompt gửi cho model chỉ mô tả: file nào, hàm nào, **chữ ký hàm** (tên, kiểu tham số, kiểu trả về), hành vi mong đợi, ca kiểm thử, lệnh chạy, kết quả mong đợi. Không dán thân hàm, không dán khối test đầy đủ.
+
+*Vì sao:* code trong tài liệu tốn token gấp nhiều lần phần mô tả, mà lại lỗi thời ngay khi code thật đổi — thành ra hai nguồn sự thật đá nhau. Chữ ký hàm và hành vi thì ổn định; thân hàm thì không. Code thật nằm trong file `.py`, đọc ở đó.
+
+*Ngoại lệ hẹp:* được phép trích tối đa **một dòng** khi chính dòng đó là thứ đang bàn (một câu SQL then chốt, một thông báo lỗi phải khớp chính xác, một lệnh terminal).
+
 ## 5. Kiến trúc
 
 ```
@@ -109,17 +116,16 @@ Tách như vậy vì: 80% lỗi sẽ nằm ở tầng nghiệp vụ, và tầng 
 
 ## 6. Mô hình dữ liệu
 
-Bốn bảng SQLite:
+Bốn bảng SQLite. Định nghĩa đầy đủ nằm trong `db/schema.sql` — đây là bản tóm tắt.
 
-```sql
-giao_vien (ma_gv PK, ten)
-phong     (ma_phong PK, suc_chua)
-lop       (ma_lop PK, ten_lop, mon, si_so)
-buoi_hoc  (id PK, ma_lop→lop, ma_gv→giao_vien, ma_phong→phong,
-           thu 2..8, ca 1..4,
-           UNIQUE(ma_phong, thu, ca),
-           UNIQUE(ma_gv,    thu, ca))
-```
+| Bảng | Cột | Ghi chú |
+|---|---|---|
+| `giao_vien` | `ma_gv` (khoá chính), `ten` | |
+| `phong` | `ma_phong` (khoá chính), `suc_chua` | |
+| `lop` | `ma_lop` (khoá chính), `ten_lop`, `mon`, `si_so` | |
+| `buoi_hoc` | `id` (khoá chính, tự tăng), `ma_lop`, `ma_gv`, `ma_phong`, `thu`, `ca` | ba cột mã đều là khoá ngoại |
+
+Hai ràng buộc `UNIQUE` trên `buoi_hoc`: một trên bộ ba (`ma_phong`, `thu`, `ca`), một trên bộ ba (`ma_gv`, `thu`, `ca`).
 
 `buoi_hoc` là bảng lõi: mỗi dòng = một buổi cố định trong tuần. Mọi câu hỏi về lịch đều quy về việc lọc bảng này.
 
@@ -173,25 +179,16 @@ Mỗi công cụ là một hàm Python bình thường, có mô tả bằng ti�
 
 ## 8. Vòng lặp agent
 
-Trái tim của Bậc 3. Mã giả:
+Trái tim của Bậc 3. Diễn giải từng bước:
 
-```
-lich_su = [prompt_he_thong, noi_quy, ...hội thoại cũ]
-lich_su.append(câu hỏi người dùng)
-
-lặp tối đa 25 vòng:
-    trả_lời = gemini(lich_su, danh_sách_công_cụ)
-
-    nếu trả_lời là văn bản thường:
-        trả cho người dùng   →  KẾT THÚC
-
-    nếu trả_lời là yêu cầu gọi công cụ:
-        nếu công cụ thuộc nhóm GHI và chưa được duyệt:
-            hiện bản xem trước, dừng chờ người bấm duyệt
-        kết_quả = chạy công cụ
-        lich_su.append(kết_quả)
-        tiếp vòng sau
-```
+1. Khởi tạo lịch sử hội thoại: prompt hệ thống, nội dung `noi_quy.md`, các lượt trao đổi cũ.
+2. Thêm câu hỏi mới của người dùng vào lịch sử.
+3. Lặp, tối đa 25 vòng:
+   - Gửi lịch sử kèm danh mục công cụ cho Gemini.
+   - Nếu model trả về **văn bản thường** — đưa cho người dùng, kết thúc.
+   - Nếu model trả về **yêu cầu gọi công cụ**:
+     - Công cụ thuộc nhóm GHI và chưa được duyệt: hiện bản xem trước, dừng chờ người bấm duyệt.
+     - Chạy công cụ, thêm kết quả vào lịch sử, sang vòng sau.
 
 Ba chi tiết quyết định chất lượng:
 - **Giới hạn 25 vòng** — chặn agent lặp vô tận, đốt tiền API.

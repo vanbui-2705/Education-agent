@@ -28,7 +28,10 @@ Gemini chọn công cụ và diễn giải kết quả. Nó không bao giờ t�
 **3. Hành động ghi luôn qua cổng duyệt.**
 Không hàm ghi nào tự chạy. Trình tự bắt buộc: xem trước → người duyệt → thực thi → ghi `data/audit_log.jsonl` → hoàn tác được.
 
-**4. Không fine-tune, không vector database.**
+**4. Tài liệu và prompt không chứa code.**
+Spec, kế hoạch thi công, và prompt gửi cho model chỉ mô tả: file nào, hàm nào, **chữ ký hàm**, hành vi mong đợi, ca kiểm thử (tên + điều kiện + kết quả), lệnh chạy, kết quả mong đợi. Không dán thân hàm, không dán khối test đầy đủ. Code trong tài liệu tốn token gấp nhiều lần phần mô tả và lỗi thời ngay khi code thật đổi. Ngoại lệ hẹp: trích tối đa **một dòng** khi chính dòng đó là thứ đang bàn.
+
+**5. Không fine-tune, không vector database.**
 Cả hai đã bị loại có chủ đích (spec §4, §9). "Dạy" agent = sửa `data/noi_quy.md`, thêm công cụ, hoặc sửa prompt hệ thống. Đừng đề xuất lại RAG/embedding cho dữ liệu bảng.
 
 ## Quy ước dữ liệu
