@@ -1,0 +1,19 @@
+# Bí mật - không đưa lên git
+.env
+credentials.json
+service_account.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Dữ liệu sinh ra - tạo lại được, không cần lưu
+data/*.db
+data/*.db-journal
+
+# Hệ điều hành
+Thumbs.db
+.DS_Store
