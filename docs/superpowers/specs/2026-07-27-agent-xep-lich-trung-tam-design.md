@@ -28,6 +28,8 @@ Mục tiêu song song, quan trọng ngang bằng: **người xây — sinh viên
 - Bộ xếp lịch tự động (đầu vào: danh sách lớp + giáo viên; đầu ra: thứ, ca, phòng, giáo viên).
 - File luật `noi_quy.md` do quản lý tự sửa bằng tiếng Việt.
 
+**Đóng gói:** dự án sẽ chạy trong **Docker image** ở giai đoạn sau. Phiên bản Python được ghim trong `Dockerfile`, nên môi trường máy cá nhân không phải là ràng buộc. Giai đoạn đầu vẫn dùng môi trường ảo để chạy nhanh; Docker thêm vào sau khi có thứ đáng đóng gói. Hệ quả cho thiết kế: mọi đường dẫn đọc từ `config.py`, mọi bí mật đọc từ biến môi trường — không viết cứng đường dẫn Windows vào code.
+
 **Không làm (giai đoạn này):**
 - Quản lý học phí, điểm danh, học bạ.
 - Nhiều cơ sở/chi nhánh.

@@ -31,6 +31,8 @@ Không hàm ghi nào tự chạy. Trình tự bắt buộc: xem trước → ng�
 **4. Tài liệu và prompt không chứa code.**
 Spec, kế hoạch thi công, và prompt gửi cho model chỉ mô tả: file nào, hàm nào, **chữ ký hàm**, hành vi mong đợi, ca kiểm thử (tên + điều kiện + kết quả), lệnh chạy, kết quả mong đợi. Không dán thân hàm, không dán khối test đầy đủ. Code trong tài liệu tốn token gấp nhiều lần phần mô tả và lỗi thời ngay khi code thật đổi. Ngoại lệ hẹp: trích tối đa **một dòng** khi chính dòng đó là thứ đang bàn.
 
+Nguyên tắc này áp cho **file lưu trên đĩa** (spec, plan, prompt hệ thống). Code dạy học hiện trong hội thoại thì khác — người xây tự gõ tay từng file để luyện, nên cần đọc code mẫu kèm giải thích từng dòng trước khi gõ. Đưa code trong chat: đúng. Ghi code vào spec/plan: sai.
+
 **5. Không fine-tune, không vector database.**
 Cả hai đã bị loại có chủ đích (spec §4, §9). "Dạy" agent = sửa `data/noi_quy.md`, thêm công cụ, hoặc sửa prompt hệ thống. Đừng đề xuất lại RAG/embedding cho dữ liệu bảng.
 
@@ -41,6 +43,10 @@ Cả hai đã bị loại có chủ đích (spec §4, §9). "Dạy" agent = sử
 - Giờ giấc các ca hiện là **giá trị tạm**, chưa chốt với trung tâm. Mọi thứ phụ thuộc giờ giấc phải đọc từ `config.py`, không hardcode.
 - `buoi_hoc` là bảng lõi: một dòng = một buổi cố định trong tuần. Mọi câu hỏi về lịch đều quy về việc lọc bảng này.
 - Hai ràng buộc `UNIQUE(ma_phong, thu, ca)` và `UNIQUE(ma_gv, thu, ca)` trong `db/schema.sql` là lưới an toàn cuối cùng chống trùng lịch. **Không được gỡ.** Code phải bắt lỗi vi phạm và dịch thành thông báo tiếng Việt dễ hiểu, thay vì né ràng buộc.
+
+## Đóng gói
+
+Dự án sẽ chạy trong **Docker image** ở giai đoạn sau — phiên bản Python ghim trong `Dockerfile`, không cần bận tâm phiên bản trên máy cá nhân. Hệ quả bắt buộc ngay từ bây giờ: mọi đường dẫn đọc từ `config.py`, mọi bí mật đọc từ biến môi trường, **không viết cứng đường dẫn Windows** vào code.
 
 ## Lệnh
 
