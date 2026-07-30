@@ -1,9 +1,0 @@
-# Thư viện dự án. Cài bằng:  pip install -r requirements.txt
-
-google-genai>=1.0.0      # gọi Gemini API
-python-dotenv>=1.0       # đọc file .env (chứa API key)
-streamlit>=1.40          # giao diện web chat
-pandas>=2.0              # đọc CSV
-gspread>=6.0             # đọc Google Sheets (giai đoạn sau)
-google-auth>=2.30        # xác thực Google (đi kèm gspread)
-pytest>=8.0              # chạy test
