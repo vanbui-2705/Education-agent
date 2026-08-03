@@ -13,6 +13,9 @@ venv/
 # Dữ liệu sinh ra - tạo lại được, không cần lưu
 data/*.db
 data/*.db-journal
+backend/data/*.db
+backend/data/*.db-journal
+backend/data/*.jsonl
 
 # Hệ điều hành
 Thumbs.db

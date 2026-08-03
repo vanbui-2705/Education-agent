@@ -1,0 +1,14 @@
+# Web framework
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+
+# LLM client (dung cho cac phase sau)
+openai
+
+# Test
+pytest
+httpx
+
+# Ghi chu: sqlite3 va csv co san trong Python, khong can cai them.
