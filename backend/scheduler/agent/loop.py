@@ -18,7 +18,7 @@ from scheduler.agent.registry import tool_schemas, run_read_tool
 from scheduler.agent.store import store
 
 MAX_ROUNDS = 25
-WRITE_NAMES = {"tao_buoi_hoc", "huy_buoi_hoc"}
+WRITE_NAMES = {"tao_buoi_hoc", "huy_buoi_hoc", "xep_lich"}
 
 
 def _fmt(tool_result: list[dict]) -> str:
@@ -75,4 +75,6 @@ def _preview_write(name: str, args: dict) -> str:
         )
     if name == "huy_buoi_hoc":
         return f"[Xem truoc] HUN BUOI HOC id={args.get('id')}"
+    if name == "xep_lich":
+        return "[Xem truoc] XEP LICH TU DONG cho cac lop chua co lich"
     return f"[Xem truoc] {name}: {args}"

@@ -101,6 +101,14 @@ WRITE_TOOLS: list[tuple] = [
             "required": ["id"],
         },
     ),
+    (
+        "xep_lich",
+        "Xep lich tu dong cho cac lop chua co lich (chon gv ranh + phong trong). CAN DUYET.",
+        {
+            "type": "object",
+            "properties": {},
+        },
+    ),
 ]
 
 
