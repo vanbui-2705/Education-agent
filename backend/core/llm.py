@@ -173,6 +173,13 @@ def build_llm(provider: str | None = None) -> LLMBackend:
     if provider == "gemini":
         return GeminiBackend(
             api_key=settings.gemini_api_key,
-            model="gemini-flash-latest",  # free-tier hoat đong voi key nay
+            model="gemini-flash-latest",  # free-tier hoat dong voi key nay
+        )
+    if provider == "9router":
+        # 9Router la OpenAI-compatible gateway (local: http://localhost:20128/v1).
+        return OpenAIBackend(
+            api_key=settings.ninrouter_api_key or "EMPTY",
+            base_url=settings.ninrouter_base_url,
+            model=settings.ninrouter_model,
         )
     raise ValueError(f"provider khong ho tro: {provider}")

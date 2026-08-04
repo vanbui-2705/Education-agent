@@ -64,7 +64,7 @@ def run(user_message: str, conn: sqlite3.Connection) -> dict:
                 messages.append(
                     {
                         "role": "assistant",
-                        "content": None,
+                        "content": "",
                         "tool_calls": [
                             {
                                 "id": tc_id,
