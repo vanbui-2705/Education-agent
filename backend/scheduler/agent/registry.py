@@ -115,13 +115,16 @@ WRITE_TOOLS: list[tuple] = [
 def tool_schemas() -> list[dict]:
     out = []
     for name, desc, schema, *_ in READ_TOOLS + WRITE_TOOLS:
+        # Gemini OpenAI-compat yeu cau additionalProperties=False o cap root
+        params = dict(schema)
+        params.setdefault("additionalProperties", False)
         out.append(
             {
                 "type": "function",
                 "function": {
                     "name": name,
                     "description": desc,
-                    "parameters": schema,
+                    "parameters": params,
                 },
             }
         )

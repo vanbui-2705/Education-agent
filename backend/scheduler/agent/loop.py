@@ -9,6 +9,7 @@ Giới hạn 25 vòng chặn lặp vô tận. Mọi lỗi công cụ trả thôn
 
 from __future__ import annotations
 
+import json
 import sqlite3
 
 from core.config import THU_MIN, THU_MAX, CA_MIN, CA_MAX
@@ -44,22 +45,51 @@ def run(user_message: str, conn: sqlite3.Connection) -> dict:
         # tool call
         name = out["name"]
         args = out.get("args", {})
+        tc_id = out.get("id") or f"call_{len(messages)}"
         if name in WRITE_NAMES:
             aid = store.put(messages, name, args)
             preview = _preview_write(name, args)
             return {
                 "done": False,
-                "reply": "Can ban duyet hanh dong ghi.",  # (depends on)
+                "reply": "Can ban duyet hanh dong ghi.",
                 "approval_id": aid,
                 "preview": preview,
             }
         # read tool
         try:
             result = run_read_tool(name, conn, args)
-            messages.append({"role": "assistant", "content": "", "tool_call": {"name": name, "args": args}})
-            messages.append({"role": "tool", "name": name, "content": _fmt(result)})
+            # Backend native (OpenAI/Nous): format tool_calls chuan.
+            # Backend prompt-based (Gemini): append ket qua duoi dang user message.
+            if getattr(llm, "native_tools", True):
+                messages.append(
+                    {
+                        "role": "assistant",
+                        "content": None,
+                        "tool_calls": [
+                            {
+                                "id": tc_id,
+                                "type": "function",
+                                "function": {"name": name, "arguments": json.dumps(args, ensure_ascii=False)},
+                            }
+                        ],
+                    }
+                )
+                messages.append(
+                    {"role": "tool", "tool_call_id": tc_id, "content": _fmt(result)}
+                )
+            else:
+                messages.append(
+                    {"role": "user", "content": f"[Ket qua tu {name}] {_fmt(result)}"}
+                )
         except Exception as e:  # noqa: BLE001
-            messages.append({"role": "tool", "name": name, "content": f"LOI cong cu: {e}"})
+            if getattr(llm, "native_tools", True):
+                messages.append(
+                    {"role": "tool", "tool_call_id": tc_id, "content": f"LOI cong cu: {e}"}
+                )
+            else:
+                messages.append(
+                    {"role": "user", "content": f"[Loi cong cu {name}] {e}"}
+                )
     return {"done": True, "reply": "Da vuot qua so vong toi da, dung tai day.", "approval_id": None}
 
 
