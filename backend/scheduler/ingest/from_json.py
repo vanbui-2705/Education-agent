@@ -9,6 +9,7 @@ Chay:  python -m scheduler.ingest.from_json
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 from pathlib import Path
 
@@ -45,9 +46,9 @@ def nap_tat_ca(conn: sqlite3.Connection) -> dict:
             (b["ma_lop"], b["ma_gv"], b["ma_phong"], b["thu"], b["ca"]),
         )
     counts["buoi_hoc"] = len(data.get("buoi_hoc", []))
-    # Noi quy -> ghi vao data/noi_quy.md
+    # Noi quy -> ghi vao data/noi_quy.md (bo qua tren Vercel vi FS read-only)
     nr = data.get("noi_quy", [])
-    if nr:
+    if nr and os.environ.get("VERCEL") != "1":
         from core.config import noi_quy_path
         p = Path(noi_quy_path())
         p.parent.mkdir(parents=True, exist_ok=True)

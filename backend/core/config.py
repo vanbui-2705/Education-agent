@@ -65,6 +65,9 @@ CA_MAX: int = 4
 
 
 def db_path() -> Path:
+    # Tren Vercel (serverless) filesystem chi ghi duoc vao /tmp
+    if os.environ.get("VERCEL") == "1":
+        return Path("/tmp") / "trung_tam.db"
     return settings.data_dir / "trung_tam.db"
 
 
@@ -77,6 +80,8 @@ def samples_dir() -> Path:
 
 
 def audit_log_path() -> Path:
+    if os.environ.get("VERCEL") == "1":
+        return Path("/tmp") / "audit_log.jsonl"
     return settings.data_dir / "audit_log.jsonl"
 
 

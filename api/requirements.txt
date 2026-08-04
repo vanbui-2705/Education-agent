@@ -1,16 +1,7 @@
-# Web framework
 fastapi
 uvicorn[standard]
 pydantic
 pydantic-settings
 python-dotenv
-
-# LLM client
 openai
-
-# Embedding (RAG local)
 numpy
-
-# Test
-pytest
-httpx

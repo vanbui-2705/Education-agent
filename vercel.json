@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/health", "dest": "/api/index.py" },
+    { "src": "/docs", "dest": "/api/index.py" },
+    { "src": "/openapi.json", "dest": "/api/index.py" },
+    { "src": "/api/(.*)", "dest": "/api/index.py" },
+    { "src": "/(.*)", "dest": "/backend/web/$1" }
+  ],
+  "env": {
+    "VERCEL": "1",
+    "LLM_PROVIDER": "gemini",
+    "NINEROUTER_BASE_URL": "http://localhost:20128/v1",
+    "NINEROUTER_MODEL": "claude-3-7-sonnet"
+  }
+}

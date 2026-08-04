@@ -1,0 +1,7 @@
+backend/data/*.db
+backend/data/*.jsonl
+backend/.env
+node_modules
+.git
+__pycache__
+*.pyc

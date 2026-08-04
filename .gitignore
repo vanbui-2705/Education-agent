@@ -20,3 +20,5 @@ backend/data/*.jsonl
 # Hệ điều hành
 Thumbs.db
 .DS_Store
+.vercel
+.env*
