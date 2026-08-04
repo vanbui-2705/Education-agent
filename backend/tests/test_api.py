@@ -19,7 +19,8 @@ def test_calendar_phong_trong() -> None:
     res = client.get("/api/calendar/phong-trong", params={"thu": 2, "ca": 1})
     assert res.status_code == 200
     ma = {r["ma_phong"] for r in res.json()}
-    assert ma == {"P302", "P303"}
+    # P301 bi T9A chiem thu2 ca1 -> con P302, P303, P304 trong
+    assert ma == {"P302", "P303", "P304"}
 
 
 def test_approve_flow() -> None:

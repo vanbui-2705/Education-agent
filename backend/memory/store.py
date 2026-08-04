@@ -9,17 +9,11 @@ from __future__ import annotations
 import json
 import sqlite3
 
-
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS memory_student (
-    user_id TEXT PRIMARY KEY,
-    profile TEXT NOT NULL DEFAULT '{}'
-);
-"""
+from db.schema_b import SCHEMA_B  # Schema B: ho so hoc sinh nam cung DB voi Schema A
 
 
 def init_memory(conn: sqlite3.Connection) -> None:
-    conn.executescript(SCHEMA)
+    conn.executescript(SCHEMA_B)
     conn.commit()
 
 

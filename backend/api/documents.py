@@ -58,3 +58,40 @@ def delete(doc_id: int) -> dict:
     finally:
         conn.close()
     return {"ok": True}
+
+
+@router.post("/nap-mau")
+def nap_mau() -> dict:
+    """Nap nhanh cac tai lieu mau (thong tin khoa hoc) vao Schema B de test RAG."""
+    import json as _json
+    from pathlib import Path
+    from rag.chunking import chunk_text
+    from rag.embedder import embed_texts
+    from core.config import samples_dir
+
+    conn = get_conn()
+    try:
+        init_docs(conn)
+        src = samples_dir() / "tai_lieu"
+        added = []
+        if src.exists():
+            for f in sorted(src.glob("*.txt")):
+                text = f.read_text(encoding="utf-8")
+                conn.execute(
+                    "INSERT INTO documents (filename, mime, status) VALUES (?,?,?)",
+                    (f.name, "text/plain", "ready"),
+                )
+                did = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+                chunks = chunk_text(text)
+                if chunks:
+                    vecs = embed_texts(chunks)
+                    for i, (ch, vec) in enumerate(zip(chunks, vecs)):
+                        conn.execute(
+                            "INSERT INTO document_chunks (document_id, idx, text, embedding_blob) VALUES (?,?,?,?)",
+                            (did, i, ch, _json.dumps(vec)),
+                        )
+                added.append(f.name)
+        conn.commit()
+    finally:
+        conn.close()
+    return {"ok": True, "added": added}

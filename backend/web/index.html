@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Education Agent — Test Web</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --fg:#e2e8f0; --mut:#94a3b8; --acc:#38bdf8; --ok:#4ade80; --warn:#fbbf24; --bad:#f87171; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, Segoe UI, Roboto, Arial; background:var(--bg); color:var(--fg); }
+  header { padding:16px 24px; background:#0b1220; border-bottom:1px solid #334155; }
+  header h1 { margin:0; font-size:20px; }
+  header .sub { color:var(--mut); font-size:13px; margin-top:4px; }
+  .wrap { max-width:980px; margin:0 auto; padding:20px; display:grid; gap:16px; }
+  .card { background:var(--card); border:1px solid #334155; border-radius:12px; padding:16px; }
+  .card h2 { margin:0 0 12px; font-size:16px; color:var(--acc); }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:8px; }
+  input, textarea, button, select { font:inherit; border-radius:8px; border:1px solid #475569; padding:8px 10px; background:#0f172a; color:var(--fg); }
+  input, select { min-width:120px; }
+  textarea { width:100%; min-height:60px; resize:vertical; }
+  button { background:var(--acc); color:#06283d; border:none; cursor:pointer; font-weight:600; }
+  button.sec { background:#334155; color:var(--fg); }
+  button:hover { filter:brightness(1.1); }
+  pre { background:#020617; border:1px solid #1e293b; border-radius:8px; padding:10px; overflow:auto; max-height:240px; font-size:12px; white-space:pre-wrap; word-break:break-word; }
+  .out { margin-top:8px; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; }
+  .ok{background:#064e3b;color:var(--ok)} .warn{background:#713f12;color:var(--warn)} .bad{background:#7f1d1d;color:var(--bad)}
+  .hint{color:var(--mut);font-size:12px;margin-top:4px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Education Agent — Trang test</h1>
+  <div class="sub">Backend FastAPI · Phân hệ A (xếp lịch) + Phân hệ B (RAG). Gọi thẳng API cùng origin.</div>
+</header>
+<div class="wrap">
+
+  <div class="card">
+    <h2>1. Tra cứu lịch (đọc)</h2>
+    <div class="row">
+      <label>Thứ (2..8):<input id="tk_thu" type="number" value="2" min="2" max="8"></label>
+      <label>Ca (1..4):<input id="tk_ca" type="number" value="1" min="1" max="4"></label>
+      <button onclick="phongTrong()">Phòng trống</button>
+      <button class="sec" onclick="gvRanh()">GV rảnh</button>
+      <button class="sec" onclick="xungDot()">Kiểm tra xung đột</button>
+    </div>
+    <div class="out"><pre id="tk_out">—</pre></div>
+  </div>
+
+  <div class="card">
+    <h2>2. Agent xếp lịch (chat + duyệt ghi)</h2>
+    <textarea id="ag_msg" placeholder="Ví dụ: Thu 2 ca 1 có phòng nào trống?  /  Tạo buổi học lớp T9A GV GV01 phòng P301 thứ 6 ca 3"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button onclick="agentChat()">Gửi</button>
+      <span id="ag_status"></span>
+    </div>
+    <div class="out"><pre id="ag_out">—</pre></div>
+    <div id="ag_approve" class="out" style="display:none">
+      <div class="hint">Cần duyệt — xem trước:</div>
+      <pre id="ag_preview"></pre>
+      <div class="row">
+        <button onclick="thucThi()">Thực thi ghi</button>
+        <button class="sec" onclick="huyDuyet()">Huỷ</button>
+      </div>
+      <div class="out"><pre id="ag_approve_out"></pre></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. Tài liệu RAG</h2>
+    <div class="row">
+      <input id="doc_name" placeholder="tên file (vd: ly.txt)" style="min-width:160px">
+    </div>
+    <textarea id="doc_text" placeholder="Nội dung tài liệu cần embed..."></textarea>
+    <div class="row" style="margin-top:8px">
+      <button onclick="upDoc()">Upload</button>
+      <button class="sec" onclick="listDoc()">Danh sách</button>
+      <button class="sec" onclick="napMau()">Nạp tài liệu mẫu</button>
+    </div>
+    <div class="row">
+      <input id="rag_q" placeholder="Câu hỏi RAG..." style="min-width:240px">
+      <button onclick="ragQuery()">Hỏi RAG</button>
+    </div>
+    <div class="out"><pre id="doc_out">—</pre></div>
+  </div>
+
+  <div class="card">
+    <h2>4. Gia sư RAG (chat)</h2>
+    <div class="row">
+      <input id="ch_uid" value="u1" placeholder="user_id" style="min-width:90px">
+      <input id="ch_q" placeholder="Câu hỏi của học sinh..." style="min-width:280px">
+      <button onclick="tutorChat()">Gửi</button>
+    </div>
+    <div class="out"><pre id="ch_out">—</pre></div>
+  </div>
+
+  <div class="card">
+    <h2>5. Hồ sơ học sinh (memory)</h2>
+    <div class="row">
+      <input id="mem_uid" value="u1" placeholder="user_id" style="min-width:90px">
+      <button onclick="getMem()">Xem</button>
+    </div>
+    <textarea id="mem_profile" placeholder='{"mon_yeu":"Lý","muc_tieu":"thi dh"}'></textarea>
+    <div class="row" style="margin-top:8px"><button class="sec" onclick="putMem()">Lưu hồ sơ</button></div>
+    <div class="out"><pre id="mem_out">—</pre></div>
+  </div>
+
+  <div class="card">
+    <h2>6. Quản lý</h2>
+    <div class="row">
+      <button onclick="xepLich()">Xếp lịch tự động</button>
+      <button class="sec" onclick="undoAll()">Hoàn tác mọi ghi gần nhất</button>
+    </div>
+    <div class="out"><pre id="mgr_out">—</pre></div>
+    <div class="hint">API docs: <a style="color:var(--acc)" href="/docs">/docs</a> · health: <a style="color:var(--acc)" href="/health">/health</a></div>
+  </div>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+async function call(method, url, body) {
+  const opt = { method, headers: { "Content-Type": "application/json" } };
+  if (body) opt.body = JSON.stringify(body);
+  const r = await fetch(url, opt);
+  const txt = await r.text();
+  let data; try { data = JSON.parse(txt); } catch { data = txt; }
+  return { status: r.status, data };
+}
+function show(el, obj, ok=true) {
+  $(el).textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+  $(el).previousElementSibling; // noop
+}
+async function phongTrong() {
+  const thu=$("tk_thu").value, ca=$("tk_ca").value;
+  const r = await call("GET", `/api/calendar/phong-trong?thu=${thu}&ca=${ca}`);
+  show("tk_out", r.data);
+}
+async function gvRanh() {
+  const thu=$("tk_thu").value, ca=$("tk_ca").value;
+  const r = await call("GET", `/api/calendar/giao-vien-ranh?thu=${thu}&ca=${ca}`);
+  show("tk_out", r.data);
+}
+async function xungDot() {
+  const r = await call("GET", `/api/scheduler/xung-dot`);
+  show("tk_out", r.data);
+}
+let lastApproval = null;
+async function agentChat() {
+  $("ag_approve").style.display = "none";
+  const msg = $("ag_msg").value.trim();
+  if (!msg) return;
+  $("ag_status").innerHTML = '<span class="badge warn">đang gửi...</span>';
+  const r = await call("POST", "/api/agent/chat", { message: msg });
+  $("ag_status").innerHTML = `<span class="badge ${r.status===200?'ok':'bad'}">${r.status}</span>`;
+  show("ag_out", r.data);
+  if (r.data && r.data.approval_id) {
+    lastApproval = r.data.approval_id;
+    $("ag_preview").textContent = r.data.preview || "(không có xem trước)";
+    $("ag_approve").style.display = "block";
+  }
+}
+async function thucThi() {
+  if (!lastApproval) return;
+  const r = await call("POST", "/api/approve", { approval_id: lastApproval });
+  show("ag_approve_out", r.data);
+  $("ag_approve").style.display = "none";
+}
+async function huyDuyet() { $("ag_approve").style.display = "none"; lastApproval=null; }
+async function upDoc() {
+  const name=$("doc_name").value.trim(), text=$("doc_text").value;
+  if(!name||!text){ show("doc_out","Nhập tên file và nội dung"); return; }
+  const r = await call("POST", "/api/documents", { filename:name, text });
+  show("doc_out", r.data);
+}
+async function listDoc() {
+  const r = await call("GET", "/api/documents");
+  show("doc_out", r.data);
+}
+async function ragQuery() {
+  const q=$("rag_q").value.trim(); if(!q){ show("doc_out","Nhập câu hỏi"); return; }
+  const r = await call("POST", "/api/rag/query", { question:q, k:3 });
+  show("doc_out", r.data);
+}
+async function napMau() {
+  // Goi script nap tai lieu mau qua mot endpoint tien ich
+  const r = await call("POST", "/api/documents/nap-mau");
+  show("doc_out", r.data);
+}
+async function tutorChat() {
+  const uid=$("ch_uid").value.trim(), q=$("ch_q").value.trim();
+  if(!q){ show("ch_out","Nhập câu hỏi"); return; }
+  const r = await call("POST", "/api/chat", { user_id:uid, question:q });
+  show("ch_out", r.data);
+}
+async function getMem() {
+  const uid=$("mem_uid").value.trim();
+  const r = await call("GET", `/api/memory/${uid}`);
+  show("mem_out", r.data);
+  if(r.data && r.data.profile) $("mem_profile").value = JSON.stringify(r.data.profile, null, 2);
+}
+async function putMem() {
+  const uid=$("mem_uid").value.trim();
+  let p; try { p = JSON.parse($("mem_profile").value||"{}"); } catch(e){ show("mem_out","Profile JSON không hợp lệ"); return; }
+  const r = await call("PUT", `/api/memory/${uid}`, { profile:p });
+  show("mem_out", r.data);
+}
+async function xepLich() {
+  const r = await call("POST", "/api/scheduler/xep-lich");
+  show("mgr_out", r.data);
+}
+async function undoAll() {
+  const r = await call("POST", "/api/approve/undo");
+  show("mgr_out", r.data);
+}
+</script>
+</body>
+</html>

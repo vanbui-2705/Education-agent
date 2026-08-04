@@ -11,29 +11,11 @@ import sqlite3
 
 from rag.chunking import chunk_text
 from rag.embedder import embed_texts
-
-
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS documents (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    filename TEXT NOT NULL,
-    mime TEXT NOT NULL DEFAULT 'text/plain',
-    status TEXT NOT NULL DEFAULT 'ready',
-    meta TEXT
-);
-CREATE TABLE IF NOT EXISTS document_chunks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    document_id INTEGER NOT NULL,
-    idx INTEGER NOT NULL,
-    text TEXT NOT NULL,
-    embedding_blob TEXT,
-    FOREIGN KEY (document_id) REFERENCES documents(id)
-);
-"""
+from db.schema_b import SCHEMA_B  # Schema B: kho tri thuc trung tam (chung 1 DB)
 
 
 def init_docs(conn: sqlite3.Connection) -> None:
-    conn.executescript(SCHEMA)
+    conn.executescript(SCHEMA_B)
     conn.commit()
 
 

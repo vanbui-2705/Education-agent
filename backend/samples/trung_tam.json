@@ -1,0 +1,125 @@
+{
+  "giao_vien": [
+    {
+      "ma_gv": "GV01",
+      "ten": "Thay Nam"
+    },
+    {
+      "ma_gv": "GV02",
+      "ten": "Co Lan"
+    },
+    {
+      "ma_gv": "GV03",
+      "ten": "Thay Hoang"
+    },
+    {
+      "ma_gv": "GV04",
+      "ten": "Co Mai"
+    },
+    {
+      "ma_gv": "GV05",
+      "ten": "Co Huong"
+    }
+  ],
+  "phong": [
+    {
+      "ma_phong": "P301",
+      "suc_chua": 30
+    },
+    {
+      "ma_phong": "P302",
+      "suc_chua": 25
+    },
+    {
+      "ma_phong": "P303",
+      "suc_chua": 20
+    },
+    {
+      "ma_phong": "P304",
+      "suc_chua": 15
+    }
+  ],
+  "lop": [
+    {
+      "ma_lop": "T9A",
+      "ten_lop": "Lop 9A",
+      "mon": "Toan",
+      "si_so": 28
+    },
+    {
+      "ma_lop": "T10B",
+      "ten_lop": "Lop 10B",
+      "mon": "Ly",
+      "si_so": 24
+    },
+    {
+      "ma_lop": "T11C",
+      "ten_lop": "Lop 11C",
+      "mon": "Tieng Anh",
+      "si_so": 22
+    },
+    {
+      "ma_lop": "T12D",
+      "ten_lop": "Lop 12D",
+      "mon": "Van",
+      "si_so": 20
+    },
+    {
+      "ma_lop": "T9E",
+      "ten_lop": "Lop 9E",
+      "mon": "Toan",
+      "si_so": 26
+    }
+  ],
+  "buoi_hoc": [
+    {
+      "ma_lop": "T9A",
+      "ma_gv": "GV01",
+      "ma_phong": "P301",
+      "thu": 2,
+      "ca": 1
+    },
+    {
+      "ma_lop": "T9A",
+      "ma_gv": "GV01",
+      "ma_phong": "P301",
+      "thu": 4,
+      "ca": 1
+    },
+    {
+      "ma_lop": "T10B",
+      "ma_gv": "GV03",
+      "ma_phong": "P302",
+      "thu": 3,
+      "ca": 2
+    },
+    {
+      "ma_lop": "T11C",
+      "ma_gv": "GV04",
+      "ma_phong": "P303",
+      "thu": 3,
+      "ca": 3
+    },
+    {
+      "ma_lop": "T12D",
+      "ma_gv": "GV05",
+      "ma_phong": "P304",
+      "thu": 5,
+      "ca": 1
+    },
+    {
+      "ma_lop": "T9E",
+      "ma_gv": "GV02",
+      "ma_phong": "P302",
+      "thu": 2,
+      "ca": 2
+    }
+  ],
+  "noi_quy": [
+    "Giao vien toi da 2 buoi/ngay.",
+    "Mot lop chi hoc 1 buoi cung mot thu+ca.",
+    "Phong phai co suc chua >= si so lop.",
+    "Khong xep lop vao chu nhat tru khi co yeu cau dac biet.",
+    "Moi buoi hoc 90 phut, nghi giua gio 10 phut."
+  ]
+}
